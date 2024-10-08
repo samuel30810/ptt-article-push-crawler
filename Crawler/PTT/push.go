@@ -3,6 +3,8 @@ package crawler
 import (
 	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -10,6 +12,7 @@ import (
 type PTTPushData struct {
 	Content    string
 	IPDatetime string
+	PushTime   time.Time
 }
 
 func GetPTTPushData(url string) (pushDataList []PTTPushData, err error) {
@@ -38,7 +41,9 @@ func GetPTTPushData(url string) (pushDataList []PTTPushData, err error) {
 	doc.Find("div.push").Each(func(i int, s *goquery.Selection) {
 		// 抓取 push-content 和 push-ipdatetime
 		content := s.Find(".push-content").Text()
-		ipdatetime := s.Find(".push-ipdatetime").Text()
+		ipdatetime := cleanIpdatetimeToString(s.Find(".push-ipdatetime").Text())
+
+		pushTime, _ := cleanIpdatetimeToTime(ipdatetime)
 
 		// 去除 content 前面的 ": "
 		content = content[2:]
@@ -47,10 +52,35 @@ func GetPTTPushData(url string) (pushDataList []PTTPushData, err error) {
 		pushData := PTTPushData{
 			Content:    content,
 			IPDatetime: ipdatetime,
+			PushTime:   pushTime,
 		}
 
 		// 將 PushData 加入 slice
 		pushDataList = append(pushDataList, pushData)
 	})
+	return
+}
+
+func cleanIpdatetimeToString(ipdatetime string) (cleanIpdatetime string) {
+	ipdatetime = strings.Replace(ipdatetime, "\x0a", "", -1)
+	ipdatetime = strings.Replace(ipdatetime, " ", "", 1)
+
+	cleanIpdatetime = ipdatetime
+	return
+}
+
+func cleanIpdatetimeToTime(ipdatetime string) (parsedTime time.Time, err error) {
+
+	year := time.Now().Year()
+	layout := "01/02 15:04"
+
+	parsedTime, err = time.ParseInLocation(layout, ipdatetime, time.Local)
+	if err != nil {
+		fmt.Printf("cleanIpdatetimeToTime(): time.ParseInLocation fail, err = %s\n", err.Error())
+		return
+	}
+
+	parsedTime = parsedTime.AddDate(year-parsedTime.Year(), 0, 0)
+
 	return
 }
