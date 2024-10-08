@@ -1,7 +1,7 @@
 package crawler
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
@@ -16,19 +16,22 @@ func GetPTTPushData(url string) (pushDataList []PTTPushData, err error) {
 	// 發送 HTTP GET 請求
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("GetPTTPushData(): http.Get fail, err = %s\n", err.Error())
+		return
 	}
 	defer resp.Body.Close()
 
 	// 檢查 HTTP 狀態碼是否正確
 	if resp.StatusCode != 200 {
-		log.Fatalf("Status code error: %d %s", resp.StatusCode, resp.Status)
+		fmt.Printf("GetPTTPushData(): status code error, status code = %d, status = %s\n", resp.StatusCode, resp.Status)
+		return
 	}
 
 	// 使用 goquery 解析 HTML
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("GetPTTPushData(): goquery.NewDocumentFromReader fail, err = %s\n", err.Error())
+		return
 	}
 
 	// 找到所有 class 為 "push" 的 div

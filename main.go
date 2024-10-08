@@ -48,7 +48,7 @@ func SendPTTPushToTG(url string) (err error) {
 
 	err = TG.SendMessageToTG(msg)
 	if err != nil {
-		fmt.Printf("Send Message To TG fail, err = %s", err.Error())
+		fmt.Printf("Send Message To TG fail, err = %s \n", err.Error())
 		return
 	}
 

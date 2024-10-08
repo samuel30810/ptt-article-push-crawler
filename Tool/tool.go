@@ -1,6 +1,9 @@
 package Tool
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 func IsWithinOneHour(ipdatetime string) (bool, error) {
 	// 取得當前時間
@@ -15,6 +18,7 @@ func IsWithinOneHour(ipdatetime string) (bool, error) {
 	// 把字串轉成 "年/月/日 時:分" 格式來解析
 	parsedTime, err := time.ParseInLocation(layout, ipdatetime, time.Local)
 	if err != nil {
+		fmt.Printf("IsWithinOneHour(): time.ParseInLocation fail, err = %s \n", err.Error())
 		return false, err
 	}
 
