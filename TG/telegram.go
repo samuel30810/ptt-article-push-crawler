@@ -4,13 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	Const "headphone/Const"
 	"io"
 	"net/http"
-)
-
-const (
-	token  = ""
-	chatID = 0
 )
 
 var (
@@ -23,10 +19,10 @@ type TelegramMessage struct {
 }
 
 func SendMessageToTG(msg string) (err error) {
-	url := fmt.Sprintf(API_SendMessage, token)
+	url := fmt.Sprintf(API_SendMessage, Const.TelegramToken)
 
 	body := TelegramMessage{
-		ChatID: chatID,
+		ChatID: Const.TelegramChatID,
 		Text:   msg,
 	}
 

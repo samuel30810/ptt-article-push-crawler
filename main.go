@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	Const "headphone/Const"
 	PTTCrawler "headphone/Crawler/PTT"
 	TG "headphone/TG"
 )
@@ -14,7 +15,13 @@ var (
 
 func main() {
 
-	url := "https://www.ptt.cc/bbs/Headphone/M.1530392323.A.695.html"
+	err := Const.ReadAndSetSettings("setting.json")
+	if err != nil {
+		fmt.Printf("Const.ReadAndSetSettings fail, err = %s\n", err.Error())
+		return
+	}
+
+	url := Const.ArticleURL
 
 	SendAllPTTPushToTG(url)
 
