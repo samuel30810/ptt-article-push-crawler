@@ -6,7 +6,10 @@ import (
 
 	PTTCrawler "headphone/Crawler/PTT"
 	TG "headphone/TG"
-	Tool "headphone/TooL"
+)
+
+var (
+	urlMapLastPushTime = map[string]time.Time{}
 )
 
 func main() {
@@ -46,6 +49,8 @@ func SendAllPTTPushToTG(url string) (err error) {
 		fmt.Printf("SendAllPTTPushToTG(): Send Message To TG fail, err = %s \n", err.Error())
 		return
 	}
+
+	urlMapLastPushTime[url] = pushDataList[len(pushDataList)-1].PushTime
 	return
 }
 
@@ -59,11 +64,8 @@ func SendNewPTTPushToTG(url string) (err error) {
 	msg := ""
 
 	for _, push := range pushDataList {
-		inTime, err := Tool.IsWithinOneHour(push.IPDatetime)
-		if err != nil {
-			continue
-		}
-		if inTime {
+
+		if push.PushTime.After(urlMapLastPushTime[url]) {
 			msg = msg + "\n" + push.Content + "_" + push.IPDatetime
 		}
 	}
@@ -80,5 +82,7 @@ func SendNewPTTPushToTG(url string) (err error) {
 		fmt.Printf("SendNewPTTPushToTG(): Send Message To TG fail, err = %s \n", err.Error())
 		return
 	}
+
+	urlMapLastPushTime[url] = pushDataList[len(pushDataList)-1].PushTime
 	return
 }
