@@ -46,7 +46,7 @@ func ReadAndSetSettings(filename string) (err error) {
 		return
 	}
 
-	if settings.ArticleURL == "" || settings.TelegramToken == "" || settings.TelegramChatID == 0 || CheckFrequency == 0 {
+	if settings.ArticleURL == "" || settings.TelegramToken == "" || settings.TelegramChatID == 0 || settings.CheckFrequency == 0 {
 		err = errors.New("setting broken, please check setting file")
 		fmt.Printf("ReadAndSetSettings(): setting broken, please check setting file\n")
 		return
