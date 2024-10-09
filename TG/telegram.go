@@ -26,6 +26,13 @@ func SendMessageToTG(msg string) (err error) {
 		Text:   msg,
 	}
 
+	if len(msg) > 4095 {
+		defer func() {
+			SendMessageToTG(msg[4095:])
+		}()
+		body.Text = msg[:4095]
+	}
+
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		fmt.Printf("SendMessageToTG(): json marshl fail, err = %s \n", err.Error())
@@ -46,7 +53,7 @@ func SendMessageToTG(msg string) (err error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("SendMessageToTG(): http status fail, resp body = %s, status = %d", string(respBody), resp.StatusCode)
+		fmt.Printf("SendMessageToTG(): http status fail, resp body = %s, status = %d\n", string(respBody), resp.StatusCode)
 		return
 	}
 	return
