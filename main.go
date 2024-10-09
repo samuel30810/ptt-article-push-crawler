@@ -34,7 +34,7 @@ func main() {
 func SendAllPTTPushToTG(url string) (err error) {
 	pushDataList, err := PTTCrawler.GetPTTPushData(url)
 	if err != nil {
-		fmt.Printf("SendAllPTTPushToTG(): Get PushData fail, err = %s", err.Error())
+		fmt.Printf("SendAllPTTPushToTG(): Get PushData fail, err = %s\n", err.Error())
 		return
 	}
 
@@ -45,11 +45,11 @@ func SendAllPTTPushToTG(url string) (err error) {
 	}
 
 	if msg == "" {
-		fmt.Println("SendAllPTTPushToTG(): no new push")
+		fmt.Println("SendAllPTTPushToTG(): no push")
 		return
 	}
 
-	msg = "結果：" + "\n" + msg
+	msg = "結果：" + msg
 
 	err = TG.SendMessageToTG(msg)
 	if err != nil {
@@ -64,7 +64,7 @@ func SendAllPTTPushToTG(url string) (err error) {
 func SendNewPTTPushToTG(url string) (err error) {
 	pushDataList, err := PTTCrawler.GetPTTPushData(url)
 	if err != nil {
-		fmt.Printf("SendNewPTTPushToTG(): Get PushData fail, err = %s", err.Error())
+		fmt.Printf("SendNewPTTPushToTG(): Get PushData fail, err = %s\n", err.Error())
 		return
 	}
 
@@ -82,7 +82,7 @@ func SendNewPTTPushToTG(url string) (err error) {
 		return
 	}
 
-	msg = "結果：" + "\n" + msg
+	msg = "結果：" + msg
 
 	err = TG.SendMessageToTG(msg)
 	if err != nil {
