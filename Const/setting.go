@@ -9,15 +9,17 @@ import (
 )
 
 type Settings struct {
-	URL            string `json:"articleURL"`
+	ArticleURL     string `json:"articleURL"`
 	TelegramToken  string `json:"telegramToken"`
 	TelegramChatID int    `json:"telegramChatID"`
+	CheckFrequency int    `json:"checkFrequency"`
 }
 
 var (
 	ArticleURL     = ""
 	TelegramToken  = ""
 	TelegramChatID = 0
+	CheckFrequency = 0
 )
 
 func ReadAndSetSettings(filename string) (err error) {
@@ -44,14 +46,15 @@ func ReadAndSetSettings(filename string) (err error) {
 		return
 	}
 
-	if settings.URL == "" || settings.TelegramToken == "" || settings.TelegramChatID == 0 {
+	if settings.ArticleURL == "" || settings.TelegramToken == "" || settings.TelegramChatID == 0 || CheckFrequency == 0 {
 		err = errors.New("setting broken, please check setting file")
 		fmt.Printf("ReadAndSetSettings(): setting broken, please check setting file\n")
 		return
 	}
 
-	ArticleURL = settings.URL
+	ArticleURL = settings.ArticleURL
 	TelegramToken = settings.TelegramToken
 	TelegramChatID = settings.TelegramChatID
+	CheckFrequency = settings.CheckFrequency
 	return
 }

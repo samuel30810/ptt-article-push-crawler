@@ -27,7 +27,7 @@ func main() {
 
 	for {
 		SendNewPTTPushToTG(url)
-		time.Sleep(15 * time.Minute)
+		time.Sleep(time.Duration(Const.CheckFrequency) * time.Minute)
 	}
 }
 

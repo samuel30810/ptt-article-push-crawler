@@ -1,5 +1,6 @@
 {
     "articleURL": "",
     "telegramToken": "",
-    "telegramChatID": 0  
+    "telegramChatID": 0,
+    "checkFrequency": 15
 }
