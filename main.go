@@ -7,6 +7,7 @@ import (
 	Const "headphone/Const"
 	PTTCrawler "headphone/Crawler/PTT"
 	TG "headphone/TG"
+	Tool "headphone/Tool"
 )
 
 var (
@@ -45,7 +46,7 @@ func SendAllPTTPushToTG(url string) (err error) {
 	}
 
 	if msg == "" {
-		fmt.Println("SendAllPTTPushToTG(): no push")
+		fmt.Println("SendAllPTTPushToTG(): no push. " + Tool.GetNowString())
 		return
 	}
 
@@ -78,7 +79,7 @@ func SendNewPTTPushToTG(url string) (err error) {
 	}
 
 	if msg == "" {
-		fmt.Println("SendNewPTTPushToTG(): no new push")
+		fmt.Println("SendNewPTTPushToTG(): no new push. " + Tool.GetNowString())
 		return
 	}
 
