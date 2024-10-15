@@ -22,18 +22,28 @@ func main() {
 		return
 	}
 
-	url := Const.ArticleURL
+	articles, err := Const.ReadArticleFile()
+	if err != nil {
+		fmt.Printf("Const.ReadArticleFile fail, err = %s\n", err.Error())
+		return
+	}
 
-	SendAllPTTPushToTG(url)
+	for _, article := range articles {
+		SendAllPTTPushToTG(article)
+	}
 
 	for {
-		SendNewPTTPushToTG(url)
-		time.Sleep(time.Duration(Const.CheckFrequency) * time.Minute)
+
+		for _, article := range articles {
+			SendNewPTTPushToTG(article)
+		}
+
+		time.Sleep(15 * time.Minute)
 	}
 }
 
-func SendAllPTTPushToTG(url string) (err error) {
-	pushDataList, err := PTTCrawler.GetPTTPushData(url)
+func SendAllPTTPushToTG(article Const.PTTArticle) (err error) {
+	pushDataList, err := PTTCrawler.GetPTTPushData(article.ArticleURL)
 	if err != nil {
 		fmt.Printf("SendAllPTTPushToTG(): Get PushData fail, err = %s\n", err.Error())
 		return
@@ -46,11 +56,11 @@ func SendAllPTTPushToTG(url string) (err error) {
 	}
 
 	if msg == "" {
-		fmt.Println("SendAllPTTPushToTG(): no push. " + Tool.GetNowString())
+		fmt.Printf("SendAllPTTPushToTG(): %s no push. %s\n" + Tool.GetNowString())
 		return
 	}
 
-	msg = "結果：" + msg
+	msg = article.ArticleName + " 結果：" + "\n" + msg
 
 	err = TG.SendMessageToTG(msg)
 	if err != nil {
@@ -58,39 +68,34 @@ func SendAllPTTPushToTG(url string) (err error) {
 		return
 	}
 
-	urlMapLastPushTime[url] = pushDataList[len(pushDataList)-1].PushTime
+	urlMapLastPushTime[article.ArticleURL] = pushDataList[len(pushDataList)-1].PushTime
 	return
 }
 
-func SendNewPTTPushToTG(url string) (err error) {
-	pushDataList, err := PTTCrawler.GetPTTPushData(url)
+func SendNewPTTPushToTG(article Const.PTTArticle) (err error) {
+	pushDataList, err := PTTCrawler.GetPTTPushDataAfterTime(article.ArticleURL, urlMapLastPushTime[article.ArticleURL])
 	if err != nil {
 		fmt.Printf("SendNewPTTPushToTG(): Get PushData fail, err = %s\n", err.Error())
 		return
 	}
 
-	msg := ""
-
-	for _, push := range pushDataList {
-
-		if push.PushTime.After(urlMapLastPushTime[url]) {
-			msg = msg + "\n" + push.Content + "_" + push.IPDatetime
-		}
-	}
-
-	if msg == "" {
-		fmt.Println("SendNewPTTPushToTG(): no new push. " + Tool.GetNowString())
+	if len(pushDataList) == 0 {
+		fmt.Printf("SendNewPTTPushToTG(): %s no new push. %s\n", article.ArticleName, Tool.GetNowString())
 		return
 	}
 
-	msg = "結果：" + msg
+	// 更新最後推文時間
+	urlMapLastPushTime[article.ArticleURL] = pushDataList[len(pushDataList)-1].PushTime
+
+	msg := article.ArticleName + " 結果：" + "\n"
+	for _, push := range pushDataList {
+		msg += push.Content + "_" + push.IPDatetime + "\n"
+	}
 
 	err = TG.SendMessageToTG(msg)
 	if err != nil {
 		fmt.Printf("SendNewPTTPushToTG(): Send Message To TG fail, err = %s \n", err.Error())
 		return
 	}
-
-	urlMapLastPushTime[url] = pushDataList[len(pushDataList)-1].PushTime
 	return
 }
